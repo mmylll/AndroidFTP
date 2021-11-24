@@ -1,4 +1,4 @@
-package com.maddie.androidftpserver;
+package cn.maddie.androidftpserver;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

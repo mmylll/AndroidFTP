@@ -6,7 +6,6 @@ import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText et_port, et_msg;
     private TextView tv_data, tv_ip;
 
-    FTPServer FTPServer;
+    com.example.androidftpserver.FTPServer FTPServer;
     Message message;
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
@@ -94,14 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         try {
                             FTPServer.connftp(Integer.parseInt(et_port.getText().toString()));
                         } catch (IOException e) {
-                            Looper.prepare();
-                            Toast.makeText(MainActivity.this, "请输入正确格式或范围的监听端口号", Toast.LENGTH_SHORT).show();
-                            Looper.loop();
-//                            e.printStackTrace();
-                        }catch (NumberFormatException numberFormatException){
-                            Looper.prepare();
-                            Toast.makeText(MainActivity.this,"请输入正确格式或范围的监听端口号", Toast.LENGTH_SHORT).show();
-                            Looper.loop();
+                            e.printStackTrace();
                         }
                     }
                 }).start();
@@ -111,4 +103,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
+
 }

@@ -1,4 +1,4 @@
-package com.example.androidftpcilent;
+package cn.maddie.androidtcpserver;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.example.androidftpcilent;
+package com.example.demo10_22tcp;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

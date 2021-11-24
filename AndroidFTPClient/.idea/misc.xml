@@ -3,7 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/MyProject/Computer Networking/AndroidTCP-master/AndroidTCP/app/src/main/res/layout/activity_main.xml" value="0.1793478260869565" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/drawable/ic_arrow_drop_down.xml" value="0.2515625" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/drawable/ic_arrow_drop_up.xml" value="0.2515625" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/drawable/ic_baseline_insert_drive_file_24.xml" value="0.1" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/drawable/ic_folder.xml" value="1.509375" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_main.xml" value="0.17300724637681159" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/child.xml" value="0.1598731884057971" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/layout_profile_node.xml" value="0.1598731884057971" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/parent.xml" value="0.1598731884057971" />
       </map>
     </option>
   </component>

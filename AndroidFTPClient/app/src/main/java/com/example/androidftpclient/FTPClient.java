@@ -1,4 +1,4 @@
-package com.example.androidftpcilent;
+package com.example.androidftpclient;
 
 import android.os.Handler;
 import android.os.Message;
@@ -60,7 +60,5 @@ public class FTPClient {
                 }
             }
         }).start();
-
     }
-
 }
