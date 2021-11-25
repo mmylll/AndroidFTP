@@ -47,6 +47,8 @@ public class FTPServer {
             message.what = 1;//接收
             message.obj = s;
             handler.sendMessage(message);
+
+            login(s);
         }
     }
 
@@ -67,6 +69,17 @@ public class FTPServer {
                 }
             }
         }).start();
+    }
 
+    public void login(String str){
+        if(str.contains("USER")&&str.contains("PASS")){
+        String[] result = str.split("\\s+");
+        if((result[1].equals("mmylzy"))&&(result[3].equals("11111111"))){
+            send("login success");
+        }else{
+            System.out.println("zhixingdaozhelewwav");
+            send("login false");
+        }
+    }
     }
 }

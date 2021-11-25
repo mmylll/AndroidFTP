@@ -14,9 +14,14 @@ public class FTPClient {
     OutputStream outputStream;
     Message message;
     Handler handler;
+    boolean hasLogin;
 
     public FTPClient(Handler handler) {
         this.handler = handler;
+    }
+
+    public FTPClient(){
+        hasLogin = false;
     }
 
     public void connftp(String ip, int port) throws IOException {
@@ -60,5 +65,9 @@ public class FTPClient {
                 }
             }
         }).start();
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 }

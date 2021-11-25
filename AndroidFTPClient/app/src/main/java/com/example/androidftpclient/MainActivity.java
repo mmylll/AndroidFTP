@@ -19,6 +19,8 @@ import com.example.androidftpclient.atv.holder.MyHolder;
 import com.example.androidftpclient.holder.IconTreeItemHolder;
 import com.example.androidftpclient.holder.SelectableHeaderHolder;
 import com.example.androidftpclient.holder.SelectableItemHolder;
+import com.example.androidftpclient.ui.login.LoginActivity;
+
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -33,7 +35,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText et_ip, et_port, et_msg;
     private TextView tv_data;
 
-    com.example.androidftpclient.FTPClient FTPClient;
+    FTPClient FTPClient;
+
     Message message;
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
@@ -60,7 +63,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initView();
         Clickbt();
-        FTPClient = new FTPClient(handler);
+//        FTPClient = new FTPClient(handler);
+
+        MyDataApp appState = ((MyDataApp)getApplicationContext());
+        FTPClient = appState.getFtpClient();
+        FTPClient.setHandler(handler);
 
         this.layout = (LinearLayout) findViewById(R.id.ll_parent);
 //        baseUsage();
@@ -146,7 +153,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                Intent i2 = new Intent(getApplicationContext(), FileChooser.class);
 //                i2.putExtra(Constants.SELECTION_MODE, Constants.SELECTION_MODES.SINGLE_SELECTION.ordinal());
 //                startActivityForResult(i2, 200);
-
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
 
                 break;
             case R.id.bt_conn:
