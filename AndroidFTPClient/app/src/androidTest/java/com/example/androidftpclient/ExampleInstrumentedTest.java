@@ -1,4 +1,4 @@
-package com.example.demo10_22tcp;
+package com.example.androidftpclient;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

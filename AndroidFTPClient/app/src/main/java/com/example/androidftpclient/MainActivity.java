@@ -16,12 +16,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.androidftpclient.atv.holder.MyHolder;
+import com.example.androidftpclient.holder.IconTreeItemHolder;
+import com.example.androidftpclient.holder.SelectableHeaderHolder;
+import com.example.androidftpclient.holder.SelectableItemHolder;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private android.widget.LinearLayout layout;
 
     private Button bt_conn, bt_send,testbt;
     private EditText et_ip, et_port, et_msg;
@@ -56,37 +62,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Clickbt();
         FTPClient = new FTPClient(handler);
 
-        //Root
-        TreeNode root = TreeNode.root();
+        this.layout = (LinearLayout) findViewById(R.id.ll_parent);
+//        baseUsage();
+        customViewForNode();
 
-        //Parent
-        MyHolder.IconTreeItem nodeItem = new MyHolder.IconTreeItem(R.drawable.ic_arrow_drop_down, "Parent");
-        TreeNode parent = new TreeNode(nodeItem).setViewHolder(new MyHolder(getApplicationContext(), true, MyHolder.DEFAULT, MyHolder.DEFAULT));
-
-        //Child
-        MyHolder.IconTreeItem childItem = new MyHolder.IconTreeItem(R.drawable.ic_folder, "Child");
-        TreeNode child = new TreeNode(childItem).setViewHolder(new MyHolder(getApplicationContext(), false, R.layout.child, 25));
-
-        //Sub Child
-        MyHolder.IconTreeItem subChildItem = new MyHolder.IconTreeItem(R.drawable.ic_folder, "Sub Child");
-        TreeNode subChild = new TreeNode(subChildItem).setViewHolder(new MyHolder(getApplicationContext(), false, R.layout.child, 50));
-
-        MyHolder.IconTreeItem fileChildItem = new MyHolder.IconTreeItem(R.drawable.ic_baseline_insert_drive_file_24, "File");
-        TreeNode fileChild = new TreeNode(fileChildItem).setViewHolder(new MyHolder(getApplicationContext(), false, R.layout.child, 75));
-
-        subChild.addChild(fileChild);
-
-        //Add sub child.
-        child.addChild(subChild);
-
-
-        //Add child.
-        parent.addChildren(child);
-        root.addChild(parent);
-
-        //Add AndroidTreeView into view.
-        AndroidTreeView tView = new AndroidTreeView(getApplicationContext(), root);
-        ((LinearLayout) findViewById(R.id.ll_parent)).addView(tView.getView());
+//        //Root
+//        TreeNode root = TreeNode.root();
+//
+//        //Parent
+//        MyHolder.IconTreeItem nodeItem = new MyHolder.IconTreeItem(R.drawable.ic_arrow_drop_down, "Parent");
+//        TreeNode parent = new TreeNode(nodeItem).setViewHolder(new MyHolder(getApplicationContext(), true, MyHolder.DEFAULT, MyHolder.DEFAULT));
+//
+//        //Child
+//        MyHolder.IconTreeItem childItem = new MyHolder.IconTreeItem(R.drawable.ic_folder, "Child");
+//        TreeNode child = new TreeNode(childItem).setViewHolder(new MyHolder(getApplicationContext(), false, R.layout.child, 25));
+//
+//        //Sub Child
+//        MyHolder.IconTreeItem subChildItem = new MyHolder.IconTreeItem(R.drawable.ic_folder, "Sub Child");
+//        TreeNode subChild = new TreeNode(subChildItem).setViewHolder(new MyHolder(getApplicationContext(), false, R.layout.child, 50));
+//
+//        MyHolder.IconTreeItem fileChildItem = new MyHolder.IconTreeItem(R.drawable.ic_baseline_insert_drive_file_24, "File");
+//        TreeNode fileChild = new TreeNode(fileChildItem).setViewHolder(new MyHolder(getApplicationContext(), false, R.layout.child, 75));
+//
+//        subChild.addChild(fileChild);
+//
+//        //Add sub child.
+//        child.addChild(subChild);
+//
+//
+//        //Add child.
+//        parent.addChildren(child);
+//        root.addChild(parent);
+//
+//        //Add AndroidTreeView into view.
+//        AndroidTreeView tView = new AndroidTreeView(getApplicationContext(), root);
+//        ((LinearLayout) findViewById(R.id.ll_parent)).addView(tView.getView());
 
 
 
@@ -167,5 +177,76 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 System.out.println(file.getPath());
             }
         }
+    }
+
+    /**
+     * AndroidTreeView的高级使用：为节点自定义视图
+     */
+    public void customViewForNode(){
+        //创建根节点
+        TreeNode root = TreeNode.root();
+        //创建节点item
+        SelectableHeaderHolder.IconTreeItem nodeItem = new SelectableHeaderHolder.IconTreeItem(R.string.ic_laptop,"我的设备");
+        SelectableHeaderHolder.IconTreeItem nodeItem2 = new SelectableHeaderHolder.IconTreeItem(R.string.ic_folder,"文件夹");
+        SelectableHeaderHolder.IconTreeItem nodeItem3 = new SelectableHeaderHolder.IconTreeItem(R.string.ic_drive_file,"文件");
+
+//        SelectableItemHolder.IconTreeItem nodeItem4 = new SelectableItemHolder.IconTreeItem(R.string.ic_drive_file,"文件");
+
+        //创建一般节点
+        TreeNode device = new TreeNode(nodeItem);
+        TreeNode fold = new TreeNode(nodeItem2);
+        TreeNode file = new TreeNode(nodeItem3);
+
+        //添加子节点
+        fold.addChild(file);
+        device.addChild(fold);
+        root.addChild(device);
+        //创建树形视图
+        AndroidTreeView tView = new AndroidTreeView(this, root);
+        //设置树形视图开启默认动画
+        tView.setDefaultAnimation(true);
+        //设置树形视图默认的样式
+        tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
+        //设置树形视图默认的ViewHolder
+        tView.setDefaultViewHolder(SelectableHeaderHolder.class);
+        //将树形视图添加到layout中
+
+        tView.setSelectionModeEnabled(true);
+
+
+
+//        tView.setDefaultNodeClickListener(new TreeNode.TreeNodeClickListener() {
+//            @Override
+//            public void onClick(TreeNode node, Object value) {
+//                List<TreeNode> list = tView.getSelected();
+//                for(int i = 0;i < list.size();i++){
+//                    System.out.println(list.get(i).getPath());
+//                }
+//                System.out.println("------------------------------------------");
+//                System.out.println((node.getPath()));
+//            }
+//        });
+
+
+        layout.addView(tView.getView());
+    }
+
+    /**
+     * AndroidTreeView的基本使用
+     */
+    public void baseUsage(){
+        //创建根节点
+        TreeNode root = TreeNode.root();
+        //创建一般节点
+        TreeNode parent = new TreeNode("父节点");
+        TreeNode child0 = new TreeNode("子节点1");
+        TreeNode child1 = new TreeNode("子节点2");
+        //添加子节点
+        parent.addChildren(child0, child1);
+        root.addChild(parent);
+        //创建树形视图
+        AndroidTreeView tView = new AndroidTreeView(this, root);
+        //将树形视图添加到layout中
+        layout.addView(tView.getView());
     }
 }

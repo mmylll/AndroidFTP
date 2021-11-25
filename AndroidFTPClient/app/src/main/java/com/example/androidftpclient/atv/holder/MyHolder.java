@@ -11,9 +11,6 @@ import com.example.androidftpclient.R;
 import com.unnamed.b.atv.model.TreeNode;
 
 
-/**
- * Created by admin on 31-03-2016.
- */
 public class MyHolder extends TreeNode.BaseNodeViewHolder<MyHolder.IconTreeItem> {
     public static final int DEFAULT = 0;
 
@@ -68,7 +65,6 @@ public class MyHolder extends TreeNode.BaseNodeViewHolder<MyHolder.IconTreeItem>
     }
 
     private int getDimens(int resId) {
-        return (int) (context.getResources().getDimension(resId) / context.getResources().getDisplayMetrics().density)
-                ;
+        return (int) (context.getResources().getDimension(resId) / context.getResources().getDisplayMetrics().density);
     }
 }

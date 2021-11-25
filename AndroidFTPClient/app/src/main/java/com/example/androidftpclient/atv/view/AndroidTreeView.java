@@ -22,9 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by Bogdan Melnychuk on 2/10/15.
- */
+
 public class AndroidTreeView {
     private static final String NODES_PATH_SEPARATOR = ";";
 
@@ -286,11 +284,17 @@ public class AndroidTreeView {
             @Override
             public boolean onLongClick(View view) {
                 if (n.getLongClickListener() != null) {
+                    System.out.println("--------------------------------");
+                    System.out.println("长按了");
                     return n.getLongClickListener().onLongClick(n, n.getValue());
                 } else if (nodeLongClickListener != null) {
+                    System.out.println("--------------------------------");
+                    System.out.println("长按了");
                     return nodeLongClickListener.onLongClick(n, n.getValue());
                 }
                 if (enableAutoToggle) {
+                    System.out.println("--------------------------------");
+                    System.out.println("长按了");
                     toggleNode(n);
                 }
                 return false;

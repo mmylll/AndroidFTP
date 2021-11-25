@@ -1,4 +1,4 @@
-package com.example.demo10_22tcp;
+package com.example.androidftpclient;
 
 import org.junit.Test;
 
