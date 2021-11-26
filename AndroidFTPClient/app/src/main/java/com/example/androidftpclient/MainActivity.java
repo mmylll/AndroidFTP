@@ -5,8 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
@@ -15,20 +16,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.androidftpclient.atv.holder.MyHolder;
-import com.example.androidftpclient.holder.IconTreeItemHolder;
 import com.example.androidftpclient.holder.SelectableHeaderHolder;
-import com.example.androidftpclient.holder.SelectableItemHolder;
 import com.example.androidftpclient.ui.login.LoginActivity;
-
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
-
 import java.io.IOException;
-import java.util.List;
+import com.example.androidftpclient.R;
+import com.example.androidftpclient.ArcMenu;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private ArcMenu mArcMenu;
     private android.widget.LinearLayout layout;
 
     private Button bt_conn, bt_send,testbt;
@@ -72,6 +71,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.layout = (LinearLayout) findViewById(R.id.ll_parent);
 //        baseUsage();
         customViewForNode();
+
+        mArcMenu = (ArcMenu) findViewById(R.id.arc_menu);
+        mArcMenu.setonMenuItemClickListener(new ArcMenu.onMenuItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if(position == 5){
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+                Toast.makeText(MainActivity.this, position + ": " + view.getTag(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
 
 //        //Root
 //        TreeNode root = TreeNode.root();

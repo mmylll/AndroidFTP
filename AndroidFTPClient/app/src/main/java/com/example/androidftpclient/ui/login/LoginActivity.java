@@ -21,8 +21,6 @@ import android.widget.Toast;
 import com.example.androidftpclient.FTPClient;
 import com.example.androidftpclient.MyDataApp;
 import com.example.androidftpclient.R;
-import com.example.androidftpclient.ui.login.LoginViewModel;
-import com.example.androidftpclient.ui.login.LoginViewModelFactory;
 import com.example.androidftpclient.databinding.ActivityLoginBinding;
 
 public class LoginActivity extends AppCompatActivity {
