@@ -29,8 +29,8 @@ public class FTPServer {
 
     private Socket dataSocket;
     private Logger logger;//日志对象
-    private String dir;//绝对路径
-    private String pdir = "/Data";//相对路径
+    private String dir = "/data/FTPServer";//绝对路径
+    private String pdir = "/data/FTPServer";//相对路径
     private final static Random generator = new Random();//随机数
     BufferedReader br;
     PrintWriter pw;
@@ -49,10 +49,17 @@ public class FTPServer {
         this.handler = handler;
     }
 
-    public void conntcp( int port) throws IOException {
+    public void connftp(int port) throws IOException {
         logger = Logger.getLogger("com");
         serverSocket = new ServerSocket(port);
-        System.out.println("?????????????");
+        logger.info("准备连接");
+        File folder = new File("/data/FTPServer");
+        if(!folder.exists()&&!folder.isDirectory()){
+            folder.mkdir();
+            logger.info("文件夹已创建成功");
+        }else {
+            logger.info("文件夹已存在");
+        }
         while (true){
             ctrlSocket = serverSocket.accept();
             if (ctrlSocket != null){
@@ -68,6 +75,7 @@ public class FTPServer {
                 accept();
             }
         }
+
     }
 
     private void accept() throws IOException {
@@ -115,15 +123,20 @@ public class FTPServer {
             } //end PASS
 // PWD命令
             else if(command.toUpperCase().startsWith("PWD")){
+                File folder = new File("/data");
+                send("("+folder.isDirectory()+folder.isFile()+" "+folder.exists()+")");
+                System.out.println("("+folder.isDirectory()+folder.isFile()+" "+folder.exists()+")"+"-------------------");
                 logger.info("("+username+") ("+clientIp+")> "+command);
                 if(loginStuts){
                     logger.info("用户"+clientIp+"："+username+"执行PWD命令");
-                    pw.println("257 "+pdir+" is current directory");
-                    pw.flush();
+//                    pw.println("257 "+pdir+" is current directory");
+//                    pw.flush();
+                    send("257 "+pdir+" is current directory");
                     logger.info("("+username+") ("+clientIp+")> 257 "+pdir+" is current directory");
                 } else{
-                    pw.println(LOGIN_WARNING);
-                    pw.flush();
+//                    pw.println(LOGIN_WARNING);
+//                    pw.flush();
+                    send(LOGIN_WARNING);
                     logger.info("("+username+") ("+clientIp+")> "+LOGIN_WARNING);
                 }
             } //end PWD
@@ -168,7 +181,10 @@ public class FTPServer {
             else if(command.toUpperCase().startsWith("QUIT")){
                 logger.info("("+username+") ("+clientIp+")> "+command);
                 b = false;
-                pw.println("221 Goodbye"); pw.flush();
+                pw.println("221 Goodbye");
+                pw.flush();
+                dataSocket.close();
+                ctrlSocket.close();
                 logger.info("("+username+") ("+clientIp+")> 221 Goodbye");
                 try {
                     Thread.currentThread();
@@ -195,12 +211,15 @@ public class FTPServer {
                         try {
 //实例化主动模式下的socket
                             dataSocket = new Socket(retr_ip,port_high * 256 + port_low);
-                            logger.info("用户"+clientIp+"："+username+"执行PORT命令"); pw.println("200 port command successful");
-                            pw.flush();
+                            logger.info("用户"+clientIp+"："+username+"执行PORT命令");
+//                            pw.println("200 port command successful");
+//                            pw.flush();
+                            send("200 port command successful");
                             logger.info("("+username+") ("+clientIp+")> 200 port command successful");
                         } catch (ConnectException ce) {
-                            pw.println("425 Can't open data connection.");
-                            pw.flush();
+//                            pw.println("425 Can't open data connection.");
+//                            pw.flush();
+                            send("425 Can't open data connection.");
                             logger.info("("+username+") ("+clientIp+")> 425 Can't open data connection.");
                             System.out.println(ce.getMessage());
                             for(StackTraceElement ste : ce.getStackTrace()){
@@ -218,8 +237,9 @@ public class FTPServer {
                             }
                         }
                     } catch (NumberFormatException e) {
-                        pw.println("503 Bad sequence of commands.");
-                        pw.flush();
+//                        pw.println("503 Bad sequence of commands.");
+//                        pw.flush();
+                        send("503 Bad sequence of commands.");
                         logger.info("("+username+") ("+clientIp+")> 503 Bad sequence of commands.");
                         System.out.println(e.getMessage());
                         for(StackTraceElement ste : e.getStackTrace()){
@@ -227,8 +247,9 @@ public class FTPServer {
                         }
                     }
                 } else{
-                    pw.println(LOGIN_WARNING);
-                    pw.flush();
+//                    pw.println(LOGIN_WARNING);
+//                    pw.flush();
+                    send(LOGIN_WARNING);
                     logger.info("("+username+") ("+clientIp+")> "+LOGIN_WARNING);
                 }
             } //end PORT
@@ -244,6 +265,8 @@ public class FTPServer {
                         try {
 //服务器绑定端口
                             ss = new ServerSocket(port_high * 256 + port_low);
+                            System.out.println("***********************");
+                            System.out.println(port_high * 256 + port_low);
                             break;
                         } catch (IOException e) {
                             continue;
@@ -258,16 +281,21 @@ public class FTPServer {
                     }
                     pw.println("227 Entering Passive Mode ("+i.getHostAddress().replace(".", ",")+","+port_high+","+port_low+")");
                     pw.flush();
-                    try {
-                        dataSocket = ss.accept();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    while (true) {
+                        try {
+                            dataSocket = ss.accept();
+                            System.out.println(dataSocket.isConnected()+"----------------------");
+                            break;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                     logger.info("("+username+") ("+clientIp+")> 227 Entering Passive Mode ("+i.getHostAddress().replace(".", ",")+","+port_high+","+port_low+")");
 
                 } else{
-                    pw.println(LOGIN_WARNING);
-                    pw.flush();
+//                    pw.println(LOGIN_WARNING);
+//                    pw.flush();
+                    send(LOGIN_WARNING);
                     logger.info("("+username+") ("+clientIp+")> "+LOGIN_WARNING);
                 }
             } //end PASV
@@ -277,13 +305,15 @@ public class FTPServer {
                 if(loginStuts){
                     str = command.substring(4).trim();
                     if("".equals(str)){
-                        pw.println("501 Syntax error");
-                        pw.flush();
+//                        pw.println("501 Syntax error");
+//                        pw.flush();
+                        send("501 Syntax error");
                         logger.info("("+username+") ("+clientIp+")> 501 Syntax error");
                     } else {
                         try {
-                            pw.println("150 Opening data channel for file transfer.");
-                            pw.flush();
+//                            pw.println("150 Opening data channel for file transfer.");
+//                            pw.flush();
+                            send("150 Opening data channel for file transfer.");
                             logger.info("("+username+") ("+clientIp+")> 150 Opening data channel for file transfer.");
                             RandomAccessFile outfile = null;
                             OutputStream outsocket = null;
@@ -317,12 +347,14 @@ public class FTPServer {
                                 }
                             }
                             logger.info("用户"+clientIp+"："+username+"执行RETR命令");
-                            pw.println("226 Transfer OK");
-                            pw.flush();
+//                            pw.println("226 Transfer OK");
+//                            pw.flush();
+                            send("226 Transfer OK");
                             logger.info("("+username+") ("+clientIp+")> 226 Transfer OK");
                         } catch (Exception e){
-                            pw.println("503 Bad sequence of commands.");
-                            pw.flush();
+//                            pw.println("503 Bad sequence of commands.");
+//                            pw.flush();
+                            send("503 Bad sequence of commands.");
                             logger.info("("+username+") ("+clientIp+")> 503 Bad sequence of commands.");
                             System.out.println(e.getMessage());
                             for(StackTraceElement ste : e.getStackTrace()){
@@ -331,8 +363,9 @@ public class FTPServer {
                         }
                     }
                 } else{
-                    pw.println(LOGIN_WARNING);
-                    pw.flush();
+//                    pw.println(LOGIN_WARNING);
+//                    pw.flush();
+                    send(LOGIN_WARNING);
                     logger.info("("+username+") ("+clientIp+")> "+LOGIN_WARNING);
                 }
             }//end RETR
@@ -342,13 +375,15 @@ public class FTPServer {
                 if(loginStuts){
                     str = command.substring(4).trim();
                     if("".equals(str)){
-                        pw.println("501 Syntax error");
-                        pw.flush();
+//                        pw.println("501 Syntax error");
+//                        pw.flush();
+                        send("501 Syntax error");
                         logger.info("("+username+") ("+clientIp+")> 501 Syntax error");
                     } else {
                         try {
-                            pw.println("150 Opening data channel for file transfer.");
-                            pw.flush();
+//                            pw.println("150 Opening data channel for file transfer.");
+//                            pw.flush();
+                            send("150 Opening data channel for file transfer.");
                             logger.info("("+username+") ("+clientIp+")> 150 Opening data channel for file transfer.");
                             RandomAccessFile infile = null;
                             InputStream insocket = null;
@@ -381,12 +416,14 @@ public class FTPServer {
                                 }
                             }
                             logger.info("用户"+clientIp+"："+username+"执行STOR命令");
-                            pw.println("226 Transfer OK");
-                            pw.flush();
+//                            pw.println("226 Transfer OK");
+//                            pw.flush();
+                            send("226 Transfer OK");
                             logger.info("("+username+") ("+clientIp+")> 226 Transfer OK");
                         } catch (Exception e){
-                            pw.println("503 Bad sequence of commands.");
-                            pw.flush();
+//                            pw.println("503 Bad sequence of commands.");
+//                            pw.flush();
+                            send("503 Bad sequence of commands.");
                             logger.info("("+username+") ("+clientIp+")> 503 Bad sequence of commands.");
                             System.out.println(e.getMessage());
                             for(StackTraceElement ste : e.getStackTrace()){
@@ -395,8 +432,9 @@ public class FTPServer {
                         }
                     }
                 } else {
-                    pw.println(LOGIN_WARNING);
-                    pw.flush();
+//                    pw.println(LOGIN_WARNING);
+//                    pw.flush();
+                    send(LOGIN_WARNING);
                     logger.info("("+username+") ("+clientIp+")> "+LOGIN_WARNING);
                 }
             } //end STOR
@@ -405,8 +443,9 @@ public class FTPServer {
                 logger.info("("+username+") ("+clientIp+")> "+command);
                 if(loginStuts){
                     try {
-                        pw.println("150 Opening data channel for directory list.");
-                        pw.flush();
+//                        pw.println("150 Opening data channel for directory list.");
+//                        pw.flush();
+                        send("150 Opening data channel for directory list.");
                         System.out.println(username+password);
                         logger.info("("+username+") ("+clientIp+")> 150 Opening data channel for directory list.");
                         PrintWriter pwr = null;
@@ -424,12 +463,14 @@ public class FTPServer {
                         //                            dataSocket.close();
                         pwr.close();
                         logger.info("用户"+clientIp+"："+username+"执行NLST命令");
-                        pw.println("226 Transfer OK");
-                        pw.flush();
+//                        pw.println("226 Transfer OK");
+//                        pw.flush();
+                        send("226 Transfer OK");
                         logger.info("("+username+") ("+clientIp+")> 226 Transfer OK");
                     } catch (Exception e){
-                        pw.println("503 Bad sequence of commands.");
-                        pw.flush();
+//                        pw.println("503 Bad sequence of commands.");
+//                        pw.flush();
+                        send("503 Bad sequence of commands.");
                         logger.info("("+username+") ("+clientIp+")> 503 Bad sequence of commands.");
                         System.out.println(e.getMessage());
                         for(StackTraceElement ste : e.getStackTrace()){
@@ -438,8 +479,9 @@ public class FTPServer {
                     }
 
                 }else{
-                    pw.println(LOGIN_WARNING);
-                    pw.flush();
+//                    pw.println(LOGIN_WARNING);
+//                    pw.flush();
+                    send(LOGIN_WARNING);
                     logger.info("("+username+") ("+clientIp+")> "+LOGIN_WARNING);
                 }
             } //end NLST
@@ -448,8 +490,9 @@ public class FTPServer {
                 logger.info("("+username+") ("+clientIp+")> "+command);
                 if(loginStuts){
                     try{
-                        pw.println("150 Opening data channel for directory list.");
-                        pw.flush();
+//                        pw.println("150 Opening data channel for directory list.");
+//                        pw.flush();
+                        send("150 Opening data channel for directory list.");
                         logger.info("("+username+") ("+clientIp+")> 150 Opening data channel for directory list.");
                         PrintWriter pwr = null;
                         try {
@@ -471,12 +514,14 @@ public class FTPServer {
                             }
                         }
                         logger.info("用户"+clientIp+"："+username+"执行LIST命令");
-                        pw.println("226 Transfer OK");
-                        pw.flush();
+//                        pw.println("226 Transfer OK");
+//                        pw.flush();
+                        send("226 Transfer OK");
                         logger.info("("+username+") ("+clientIp+")> 226 Transfer OK");
                     } catch (Exception e){
-                        pw.println("503 Bad sequence of commands.");
-                        pw.flush();
+//                        pw.println("503 Bad sequence of commands.");
+//                        pw.flush();
+                        send("503 Bad sequence of commands.");
                         logger.info("("+username+") ("+clientIp+")> 503 Bad sequence of commands.");
                         System.out.println(e.getMessage());
                         for(StackTraceElement ste : e.getStackTrace()){
@@ -484,16 +529,18 @@ public class FTPServer {
                         }
                     }
                 } else {
-                    pw.println(LOGIN_WARNING);
-                    pw.flush();
+//                    pw.println(LOGIN_WARNING);
+//                    pw.flush();
+                    send(LOGIN_WARNING);
                     logger.info("("+username+") ("+clientIp+")> "+LOGIN_WARNING);
                 }
             } //end LIST
 // 输入非法命令
             else{
                 logger.info("("+username+") ("+clientIp+")> "+command);
-                pw.println("500 Syntax error, command unrecognized.");
-                pw.flush();
+//                pw.println("500 Syntax error, command unrecognized.");
+//                pw.flush();
+                send("500 Syntax error, command unrecognized.");
                 logger.info("("+username+") ("+clientIp+")> 500 Syntax error, command unrecognized.");
             }
         } //end while

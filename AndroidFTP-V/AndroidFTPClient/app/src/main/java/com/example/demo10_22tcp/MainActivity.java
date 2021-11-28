@@ -13,9 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -23,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText et_ip, et_port, et_msg;
     private TextView tv_data;
 
-    TCPClient tcpClient;
+    FTPClient FTPClient;
     Message message;
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
@@ -50,7 +47,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initView();
         Clickbt();
-        tcpClient = new TCPClient(handler);
+        MyDataApp appState = ((MyDataApp)getApplicationContext());
+        FTPClient = appState.getFtpClient();
+        FTPClient.setHandler(handler);
+//        FTPClient = new FTPClient(handler);
     }
 
     private void Clickbt() {
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void run() {
                         try {
-                            tcpClient.conntcp(et_ip.getText().toString(), Integer.parseInt(et_port.getText().toString()));
+                            FTPClient.conntcp(et_ip.getText().toString(), Integer.parseInt(et_port.getText().toString()));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }).start();
                 break;
             case R.id.bt_send:
-                tcpClient.send(et_msg.getText().toString());
+                FTPClient.send(et_msg.getText().toString());
                 break;
         }
     }

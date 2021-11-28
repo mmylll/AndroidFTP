@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pattern" >
+        <item>PORT</item>
+        <item>PASV</item>
+    </string-array>
+
+    <string-array name="type">
+        <item>Ascii</item>
+        <item>Binary</item>
+    </string-array>
+
+    <string-array name="mode" >
+        <item>Block</item>
+        <item>Stream</item>
+        <item>Compressed</item>
+    </string-array>
+    
+    <string-array name="stru">
+        <item>File</item>
+        <item>Recode</item>
+        <item>Page</item>
+    </string-array>
+
+</resources>
