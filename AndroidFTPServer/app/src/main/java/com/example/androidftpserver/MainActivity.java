@@ -23,8 +23,10 @@ import com.example.androidftpserver.R;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button bt_conn, bt_send;
-    private EditText et_port, et_msg;
+//    private EditText et_port, et_msg;
+    private EditText et_msg;
     private TextView tv_data, tv_ip;
+    private boolean isUsing = false;
 
     com.example.androidftpserver.FTPServer FTPServer;
     Message message;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         Clickbt();
         tv_ip.setText(GetLocalIP());
-        FTPServer = new FTPServer(handler);
+        FTPServer = new FTPServer();
     }
 
     private void Clickbt() {
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_send = findViewById(R.id.bt_send);
         bt_send.setEnabled(false);
         tv_ip = findViewById(R.id.tv_ip);
-        et_port = findViewById(R.id.et_port);
+//        et_port = findViewById(R.id.et_port);
         et_msg = findViewById(R.id.et_msg);
         tv_data = findViewById(R.id.tv_data);
         tv_data.setMovementMethod(ScrollingMovementMethod.getInstance());
@@ -87,19 +89,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_conn:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            FTPServer.connftp(Integer.parseInt(et_port.getText().toString()));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                if (!isUsing) {
+                    try {
+                        FTPServer.connftp(12121);
+                        isUsing = true;
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                }).start();
+                }else {
+                    System.out.println("正在使用");
+                }
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                    }
+//                }).start();
                 break;
             case R.id.bt_send:
-                FTPServer.send(et_msg.getText().toString());
+//                FTPServer.send(et_msg.getText().toString());
                 break;
         }
     }

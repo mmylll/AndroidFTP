@@ -120,9 +120,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                ftpClient.send("USER"+" "+usernameEditText.getText().toString()+" "+"PASS"+" "+passwordEditText.getText().toString());
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+//                ftpClient.send("USER"+" "+usernameEditText.getText().toString()+" "+"PASS"+" "+passwordEditText.getText().toString());
+//                loginViewModel.login(usernameEditText.getText().toString(),
+//                        passwordEditText.getText().toString());
             }
         });
     }

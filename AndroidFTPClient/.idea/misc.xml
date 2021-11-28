@@ -24,10 +24,13 @@
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout-w936dp/activity_login.xml" value="0.10997267759562841" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_add_view.xml" value="0.14583333333333334" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_arc_menu.xml" value="0.1" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_connect.xml" value="0.1" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_login.xml" value="0.15307971014492755" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_main.xml" value="0.17300724637681159" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_navigation.xml" value="0.14583333333333334" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_setting.xml" value="0.13903985507246377" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_tab_indicator.xml" value="0.14583333333333334" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_tabbed.xml" value="0.10054347826086957" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_tabpage_indicator.xml" value="0.14583333333333334" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/activity_tabpage_indicator_ex.xml" value="0.14583333333333334" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/arc_menu.xml" value="0.17844202898550723" />
@@ -40,6 +43,7 @@
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/fragment_one.xml" value="0.14583333333333334" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/fragment_selectable_nodes.xml" value="0.15307971014492755" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/fragment_tab.xml" value="0.11302083333333333" />
+        <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/fragment_tabbed.xml" value="0.10054347826086957" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/layout_header_node.xml" value="0.1" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/layout_icon_node.xml" value="0.15307971014492755" />
         <entry key="..\:/MyProject/Computer Networking/AndroidFTP/AndroidFTPClient/app/src/main/res/layout/layout_place_node.xml" value="0.15307971014492755" />

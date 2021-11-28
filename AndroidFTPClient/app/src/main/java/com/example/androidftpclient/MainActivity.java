@@ -16,6 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aditya.filebrowser.Constants;
+import com.aditya.filebrowser.FileBrowser;
+import com.aditya.filebrowser.FileChooser;
 import com.example.androidftpclient.holder.SelectableHeaderHolder;
 import com.example.androidftpclient.ui.login.LoginActivity;
 import com.unnamed.b.atv.model.TreeNode;
@@ -28,13 +31,12 @@ import com.example.androidftpclient.ArcMenu;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ArcMenu mArcMenu;
-    private android.widget.LinearLayout layout;
 
     private Button bt_conn, bt_send,testbt;
-    private EditText et_ip, et_port, et_msg;
+    private EditText et_ip, et_msg;
     private TextView tv_data;
 
-    FTPClient FTPClient;
+    FTPClient ftpClient;
 
     Message message;
     @SuppressLint("HandlerLeak")
@@ -62,30 +64,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initView();
         Clickbt();
-//        FTPClient = new FTPClient(handler);
-
         MyDataApp appState = ((MyDataApp)getApplicationContext());
-        FTPClient = appState.getFtpClient();
-        FTPClient.setHandler(handler);
-
-        this.layout = (LinearLayout) findViewById(R.id.ll_parent);
-//        baseUsage();
-        customViewForNode();
+        ftpClient = appState.getFtpClient();
+//        FTPClient.setHandler(handler);
 
         mArcMenu = (ArcMenu) findViewById(R.id.arc_menu);
         mArcMenu.setonMenuItemClickListener(new ArcMenu.onMenuItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                if(position == 5){
+                if(position == 4){
                     Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                     startActivity(intent);
+                }
+                if(position == 3){
+                    Intent intent = new Intent(MainActivity.this,SettingActivity.class);
+                    startActivity(intent);
+                }
+                if (position == 2){
+                    Intent i4 = new Intent(getApplicationContext(), FileBrowser.class);
+                    startActivity(i4);
+                    Intent i2 = new Intent(getApplicationContext(), FileChooser.class);
+                    i2.putExtra(Constants.SELECTION_MODE, Constants.SELECTION_MODES.SINGLE_SELECTION.ordinal());
+                startActivityForResult(i2, 200);
                 }
                 Toast.makeText(MainActivity.this, position + ": " + view.getTag(), Toast.LENGTH_SHORT).show();
             }
         });
-
-
-
 //        //Root
 //        TreeNode root = TreeNode.root();
 //
@@ -117,9 +121,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        //Add AndroidTreeView into view.
 //        AndroidTreeView tView = new AndroidTreeView(getApplicationContext(), root);
 //        ((LinearLayout) findViewById(R.id.ll_parent)).addView(tView.getView());
-
-
-
     }
 
     private void Clickbt() {
@@ -133,49 +134,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_send = findViewById(R.id.bt_send);
         bt_send.setEnabled(false);
         et_ip = findViewById(R.id.et_ip);
-        et_port = findViewById(R.id.et_port);
         et_msg = findViewById(R.id.et_msg);
         tv_data = findViewById(R.id.tv_data);
         tv_data.setMovementMethod(ScrollingMovementMethod.getInstance());
-
         testbt = findViewById(R.id.testbt);
-
     }
 
     @Override
     public void onClick(View view) {
-
         switch (view.getId()) {
             case R.id.testbt:
-//                new ChooserDialog(MainActivity.this)
-//                        .withFilter(true, false)
-//                        .withStartFile("/data")
-//                        // to handle the result(s)
-//                        .withChosenListener(new ChooserDialog.Result() {
-//                            @Override
-//                            public void onChoosePath(String path, File pathFile) {
-//                                Toast.makeText(MainActivity.this, "FOLDER: " + path, Toast.LENGTH_SHORT).show();
-//                            }
-//                        })
-//                        .build()
-//                        .show();
-
-//                Intent i4 = new Intent(getApplicationContext(), FileBrowser.class);
-//                startActivity(i4);
-
-//                Intent i2 = new Intent(getApplicationContext(), FileChooser.class);
-//                i2.putExtra(Constants.SELECTION_MODE, Constants.SELECTION_MODES.SINGLE_SELECTION.ordinal());
-//                startActivityForResult(i2, 200);
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
-
                 break;
             case R.id.bt_conn:
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            FTPClient.connftp(et_ip.getText().toString(), Integer.parseInt(et_port.getText().toString()));
+                            ftpClient.setHost(et_ip.getText().toString());
+                            ftpClient.setPort(12121);
+                            ftpClient.connftp();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -183,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }).start();
                 break;
             case R.id.bt_send:
-                FTPClient.send(et_msg.getText().toString());
+//                FTPClient.send(et_msg.getText().toString());
                 break;
         }
     }
@@ -199,75 +178,73 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-
     /**
      * AndroidTreeView的高级使用：为节点自定义视图
      */
-    public void customViewForNode(){
-        //创建根节点
-        TreeNode root = TreeNode.root();
-        //创建节点item
-        SelectableHeaderHolder.IconTreeItem nodeItem = new SelectableHeaderHolder.IconTreeItem(R.string.ic_laptop,"我的设备");
-        SelectableHeaderHolder.IconTreeItem nodeItem2 = new SelectableHeaderHolder.IconTreeItem(R.string.ic_folder,"文件夹");
-        SelectableHeaderHolder.IconTreeItem nodeItem3 = new SelectableHeaderHolder.IconTreeItem(R.string.ic_drive_file,"文件");
-
-//        SelectableItemHolder.IconTreeItem nodeItem4 = new SelectableItemHolder.IconTreeItem(R.string.ic_drive_file,"文件");
-
-        //创建一般节点
-        TreeNode device = new TreeNode(nodeItem);
-        TreeNode fold = new TreeNode(nodeItem2);
-        TreeNode file = new TreeNode(nodeItem3);
-
-        //添加子节点
-        fold.addChild(file);
-        device.addChild(fold);
-        root.addChild(device);
-        //创建树形视图
-        AndroidTreeView tView = new AndroidTreeView(this, root);
-        //设置树形视图开启默认动画
-        tView.setDefaultAnimation(true);
-        //设置树形视图默认的样式
-        tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
-        //设置树形视图默认的ViewHolder
-        tView.setDefaultViewHolder(SelectableHeaderHolder.class);
-        //将树形视图添加到layout中
-
-        tView.setSelectionModeEnabled(true);
-
-
-
-//        tView.setDefaultNodeClickListener(new TreeNode.TreeNodeClickListener() {
-//            @Override
-//            public void onClick(TreeNode node, Object value) {
-//                List<TreeNode> list = tView.getSelected();
-//                for(int i = 0;i < list.size();i++){
-//                    System.out.println(list.get(i).getPath());
-//                }
-//                System.out.println("------------------------------------------");
-//                System.out.println((node.getPath()));
-//            }
-//        });
-
-
-        layout.addView(tView.getView());
-    }
-
+//    public void customViewForNode(){
+//        //创建根节点
+//        TreeNode root = TreeNode.root();
+//        //创建节点item
+//        SelectableHeaderHolder.IconTreeItem nodeItem = new SelectableHeaderHolder.IconTreeItem(R.string.ic_laptop,"我的设备");
+//        SelectableHeaderHolder.IconTreeItem nodeItem2 = new SelectableHeaderHolder.IconTreeItem(R.string.ic_folder,"文件夹");
+//        SelectableHeaderHolder.IconTreeItem nodeItem3 = new SelectableHeaderHolder.IconTreeItem(R.string.ic_drive_file,"文件");
+//
+////        SelectableItemHolder.IconTreeItem nodeItem4 = new SelectableItemHolder.IconTreeItem(R.string.ic_drive_file,"文件");
+//
+//        //创建一般节点
+//        TreeNode device = new TreeNode(nodeItem);
+//        TreeNode fold = new TreeNode(nodeItem2);
+//        TreeNode file = new TreeNode(nodeItem3);
+//
+//        //添加子节点
+//        fold.addChild(file);
+//        device.addChild(fold);
+//        root.addChild(device);
+//        //创建树形视图
+//        AndroidTreeView tView = new AndroidTreeView(this, root);
+//        //设置树形视图开启默认动画
+//        tView.setDefaultAnimation(true);
+//        //设置树形视图默认的样式
+//        tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
+//        //设置树形视图默认的ViewHolder
+//        tView.setDefaultViewHolder(SelectableHeaderHolder.class);
+//        //将树形视图添加到layout中
+//
+//        tView.setSelectionModeEnabled(true);
+//
+//
+//
+////        tView.setDefaultNodeClickListener(new TreeNode.TreeNodeClickListener() {
+////            @Override
+////            public void onClick(TreeNode node, Object value) {
+////                List<TreeNode> list = tView.getSelected();
+////                for(int i = 0;i < list.size();i++){
+////                    System.out.println(list.get(i).getPath());
+////                }
+////                System.out.println("------------------------------------------");
+////                System.out.println((node.getPath()));
+////            }
+////        });
+//
+//
+//        layout.addView(tView.getView());
+//    }
     /**
      * AndroidTreeView的基本使用
      */
-    public void baseUsage(){
-        //创建根节点
-        TreeNode root = TreeNode.root();
-        //创建一般节点
-        TreeNode parent = new TreeNode("父节点");
-        TreeNode child0 = new TreeNode("子节点1");
-        TreeNode child1 = new TreeNode("子节点2");
-        //添加子节点
-        parent.addChildren(child0, child1);
-        root.addChild(parent);
-        //创建树形视图
-        AndroidTreeView tView = new AndroidTreeView(this, root);
-        //将树形视图添加到layout中
-        layout.addView(tView.getView());
-    }
+//    public void baseUsage(){
+//        //创建根节点
+//        TreeNode root = TreeNode.root();
+//        //创建一般节点
+//        TreeNode parent = new TreeNode("父节点");
+//        TreeNode child0 = new TreeNode("子节点1");
+//        TreeNode child1 = new TreeNode("子节点2");
+//        //添加子节点
+//        parent.addChildren(child0, child1);
+//        root.addChild(parent);
+//        //创建树形视图
+//        AndroidTreeView tView = new AndroidTreeView(this, root);
+//        //将树形视图添加到layout中
+//        layout.addView(tView.getView());
+//    }
 }

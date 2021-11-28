@@ -15,7 +15,7 @@ public class MyDataApp extends Application {
     @Override
     public void onCreate()
     {
-        ftpClient = new FTPClient();
+        ftpClient = new FTPClient("a");
         super.onCreate();
     }
 

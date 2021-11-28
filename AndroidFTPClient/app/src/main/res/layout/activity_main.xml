@@ -11,6 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="horizontal">
 
 
@@ -18,28 +19,30 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="IP地址:"
             android:textSize="15sp" />
 
         <EditText
             android:id="@+id/et_ip"
-            android:layout_width="150dp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="服务端IP地址"
             android:textSize="15sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="端口号："
-            android:textSize="15sp" />
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="端口号："-->
+<!--            android:textSize="15sp" />-->
 
-        <EditText
-            android:id="@+id/et_port"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:hint="服务端端口号"
-            android:textSize="15sp" />
+<!--        <EditText-->
+<!--            android:id="@+id/et_port"-->
+<!--            android:layout_width="100dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="服务端端口号"-->
+<!--            android:textSize="15sp" />-->
     </LinearLayout>
 
     <LinearLayout
@@ -85,20 +88,33 @@
     </LinearLayout>
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:gravity="center"-->
+<!--            android:text="请输入下载地址"/>-->
+
+    <android.support.design.widget.TextInputEditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="请输入下载地址"
+        android:gravity="center">
+
+    </android.support.design.widget.TextInputEditText>
+    </LinearLayout>
 
     <Button
         android:id="@+id/testbt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:text="download" />
 
     <include layout="@layout/arc_menu"/>
-
-    <LinearLayout
-        android:id="@+id/ll_parent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" />
 
 
 </LinearLayout>
