@@ -291,6 +291,20 @@
                 android:layout_height="wrap_content"
                 android:text="UPLOAD" />
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/bt_disconn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="断开"
+                android:textSize="20sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

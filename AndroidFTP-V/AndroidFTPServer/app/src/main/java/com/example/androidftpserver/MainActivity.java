@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             String path = getExternalFilesDir("Server").getPath();
                             System.out.println(path + "----------------------------------");
                             FTPServer.setDir(path);
-                            FTPServer.connftp(Integer.parseInt(et_port.getText().toString()));
+                            FTPServer.connectftp(Integer.parseInt(et_port.getText().toString()));
 
                         } catch (IOException e) {
                             e.printStackTrace();

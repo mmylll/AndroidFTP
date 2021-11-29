@@ -15,7 +15,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -23,7 +22,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button bt_conn, bt_send;
     private EditText et_ip, et_port, et_msg;
     private TextView tv_data;
-    private Button bt_user, bt_pass,bt_mode,bt_type,bt_stru,bt_pattern,bt_download,bt_upload;
+    private Button bt_user, bt_pass,bt_mode,bt_type,bt_stru,bt_pattern,bt_download,bt_upload,bt_disconn;
     private EditText et_username, et_pass,et_download,et_upload;
     private Spinner sp_mode,sp_type,sp_stru,sp_pattern;
 
@@ -41,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tv_data.append("发送消息：" + msg.obj.toString() + "\n");
                     break;
                 case 3:
-                    Toast.makeText(MainActivity.this, "TCP连接成功！", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "FTP连接成功！", Toast.LENGTH_SHORT).show();
                     bt_send.setEnabled(true);
                     break;
             }
@@ -54,10 +53,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initView();
         Clickbt();
-//        MyDataApp appState = ((MyDataApp)getApplicationContext());
-//        FTPClient = appState.getFtpClient();
-//        FTPClient.setHandler(handler);
-
         FTPClient = new FTPClient(handler);
     }
 
@@ -72,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_pattern.setOnClickListener(this);
         bt_download.setOnClickListener(this);
         bt_upload.setOnClickListener(this);
+        bt_disconn.setOnClickListener(this);
     }
 
     private void initView() {
@@ -99,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bt_upload = findViewById(R.id.btUpload);
         et_download = findViewById(R.id.editDownload);
         et_upload = findViewById(R.id.editUpload);
+        bt_disconn = findViewById(R.id.bt_disconn);
     }
 
     @Override
@@ -120,15 +117,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         //申请权限
                                         MainActivity.this.requestPermissions(permissions, REQUEST_CODE_CONTACT);
                                         return;
-                                    } else {
-                                        //这里就是权限打开之后自己要操作的逻辑
                                     }
                                 }
                             }
                             String path = getExternalFilesDir("Client").getPath();
                             System.out.println(path + "--------------------");
                             FTPClient.setDir(path);
-                            FTPClient.conntcp(et_ip.getText().toString(), Integer.parseInt(et_port.getText().toString()));
+                            FTPClient.connftp(et_ip.getText().toString(), Integer.parseInt(et_port.getText().toString()));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -157,11 +152,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
 
+            case R.id.btType:
+                if(sp_type.getSelectedItem().toString().equals("Ascii")){
+                    FTPClient.send("TYPE A");
+                }else if(sp_type.getSelectedItem().toString().equals("Binary")){
+                    FTPClient.send("TYPE B");
+                }
+                break;
             case R.id.btDownload:
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        FTPClient.doGet(et_download.getText().toString());
+                        FTPClient.doRETR(et_download.getText().toString());
                     }
                 }).start();
                 break;
@@ -170,7 +172,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        FTPClient.doPut(et_upload.getText().toString());
+                        FTPClient.doSTOR(et_upload.getText().toString());
+                    }
+                }).start();
+                break;
+
+            case R.id.bt_disconn:
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FTPClient.disConnect();
                     }
                 }).start();
                 break;

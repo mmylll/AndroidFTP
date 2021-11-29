@@ -25,8 +25,8 @@ public class FTPClient {
     OutputStream outputStream;
     Message message;
     Handler handler;
-    public PrintWriter ctrlOutput;// 控制输出用的流
-    public BufferedReader ctrlInput;// 控制输入用的流
+    public PrintWriter ctrlOutput;// 控制输出流
+    public BufferedReader ctrlInput;// 控制输入流
     private ServerSocket serverDataSocket;
     private String dir;
     private String ip;
@@ -64,9 +64,8 @@ public class FTPClient {
         return remoteDir;
     }
 
-    public void conntcp(String ip, int port) throws IOException {
+    public void connftp(String ip, int port) throws IOException {
         this.ip = ip;
-
         ctrlSocket = new Socket(ip, port);
         inputStream = ctrlSocket.getInputStream();
         outputStream = ctrlSocket.getOutputStream();
@@ -85,31 +84,31 @@ public class FTPClient {
             byte[] byte2 = new byte[i];
             System.arraycopy(byte1, 0, byte2, 0, i);
             String s = new String(byte2, "UTF-8");
-//            String s = ctrlInput.readLine();
             message = new Message();
             message.what = 1;//接收
             message.obj = s;
             handler.sendMessage(message);
             if(s.contains("Passive Mode")){
-                int opening = s.indexOf('(');
-                int closing = s.indexOf(')', opening + 1);
-                if (closing > 0) {
-                    String dataLink = s.substring(opening + 1, closing);
-                    StringTokenizer tokenizer = new StringTokenizer(dataLink, ",");
-                    try {
-                        String passHost = tokenizer.nextToken() + "." + tokenizer.nextToken() + "."
-                                + tokenizer.nextToken() + "." + tokenizer.nextToken();
-                        int passPort = Integer.parseInt(tokenizer.nextToken()) * 256
-                                + Integer.parseInt(tokenizer.nextToken());
-                        dataSocket = new Socket(passHost,passPort);
-
-                        System.out.println("dataSocket链接成功");
-                    } catch (Exception e) {
-                        throw new IOException(
-                                "FTPClient received bad data link information: "
-                                        + s);
-                    }
-                }
+//                int opening = s.indexOf('(');
+//                int closing = s.indexOf(')', opening + 1);
+//                if (closing > 0) {
+//                    String dataLink = s.substring(opening + 1, closing);
+//                    StringTokenizer tokenizer = new StringTokenizer(dataLink, ",");
+//                    try {
+//                        String passHost = tokenizer.nextToken() + "." + tokenizer.nextToken() + "."
+//                                + tokenizer.nextToken() + "." + tokenizer.nextToken();
+//                        int passPort = Integer.parseInt(tokenizer.nextToken()) * 256
+//                                + Integer.parseInt(tokenizer.nextToken());
+//                        dataSocket = new Socket(passHost,passPort);
+//
+//                        System.out.println("dataSocket链接成功");
+//                    } catch (Exception e) {
+//                        throw new IOException(
+//                                "FTPClient received bad data link information: "
+//                                        + s);
+//                    }
+//                }
+                dataConnectionPASV(s);
 //                dataConnectionPort();
             }
         }
@@ -123,9 +122,6 @@ public class FTPClient {
                     byte[] bytes = s.getBytes();
                     outputStream.flush();
                     outputStream.write(bytes);
-//                ctrlOutput.flush();
-//                    ctrlOutput.write(s);
-//                    ctrlOutput.flush();
                     message = new Message();
                     message.what = 2;//发送
                     message.obj = s;
@@ -139,11 +135,9 @@ public class FTPClient {
     }
 
     public Socket dataConnectionPort() {
-        String cmd = "PORT "; // PORT存放用PORT命令传递数据的变量
+        String cmd = "PORT ";
         int i;
-//        Socket dataSocket = null;// 传送数据用Socket
         try {
-// 得到自己的地址
             System.out.println( InetAddress.getLocalHost().getAddress()+"----------------------------");
             byte[] address = InetAddress.getLocalHost().getAddress();
 // 用适当的端口号构造服务器
@@ -152,14 +146,7 @@ public class FTPClient {
             for (i = 0; i < 4; ++i)
                 cmd = cmd + (address[i] & 0xff) + ",";
             cmd = cmd + (((serverDataSocket.getLocalPort()) / 256) & 0xff) + "," + (serverDataSocket.getLocalPort() & 0xff);
-// 利用控制用的流传送PORT命令
-//            ctrlOutput.println(cmd);
-//            ctrlOutput.flush();
-            System.out.println(cmd+"----------------------");
             send(cmd);
-// 向服务器发送处理对象命令(LIST,RETR,及STOR)
-//            ctrlOutput.println(ctrlcmd);
-//            ctrlOutput.flush();
 // 接受与服务器的连接
             while(true) {
                 dataSocket = serverDataSocket.accept();
@@ -175,25 +162,41 @@ public class FTPClient {
         return dataSocket;
     }
 
-    public void doGet(String filename) {
+    public Socket dataConnectionPASV(String s) throws IOException{
+        int opening = s.indexOf('(');
+        int closing = s.indexOf(')', opening + 1);
+        if (closing > 0) {
+            String dataLink = s.substring(opening + 1, closing);
+            StringTokenizer tokenizer = new StringTokenizer(dataLink, ",");
+            try {
+                String passHost = tokenizer.nextToken() + "." + tokenizer.nextToken() + "."
+                        + tokenizer.nextToken() + "." + tokenizer.nextToken();
+                int passPort = Integer.parseInt(tokenizer.nextToken()) * 256
+                        + Integer.parseInt(tokenizer.nextToken());
+                dataSocket = new Socket(passHost,passPort);
+
+                System.out.println("dataSocket链接成功");
+            } catch (Exception e) {
+                throw new IOException("FTPClient received bad data link information: "+ s);
+            }
+        }
+        return dataSocket;
+    }
+
+    public void doRETR(String filename) {
         String fileName = filename;
         String loafile=filename;
         try {
             int n;
             byte[] buff = new byte[1024];
-// 指定服务器上的文件名
 // 在客户端上准备接收用的文件
-            System.out.println("本地文件");
             File local=new File(dir + "/" + loafile);
             System.out.println(local.getPath()+"---------------------");
             FileOutputStream outfile = new FileOutputStream(local);
-//// 构造传输文件用的数据流
-//            Socket dataSocket = dataConnectionPort("RETR " + fileName);
+// 构造传输文件用的数据流
             send("RETR " + remoteDir + "/" + fileName);
             BufferedInputStream dataInput = new BufferedInputStream(dataSocket.getInputStream());
 // 接收来自服务器的数据，写入本地文件
-            System.out.println(dataSocket.isConnected()+"----------");
-            System.out.println(dataInput.available()+"*********");
             while ((n = dataInput.read(buff)) > 0) {
                 outfile.write(buff, 0, n);
             }
@@ -204,18 +207,14 @@ public class FTPClient {
             System.exit(1);
         }
     }
-// doPut方法
+//STOR命令
 // 向服务器发送文件
-
-    public void doPut(String filename) {
+    public void doSTOR(String filename) {
         String fileName = filename;
         try {
             int n;
             byte[] buff = new byte[1024];
             FileInputStream sendfile = null;
-// 指定文件名
-// 准备读出客户端上的文件
-//BufferedInputStream dataInput = new BufferedInputStream(new FileInputStream(fileName));
             try {
 
                 sendfile = new FileInputStream(dir + "/" + fileName);
@@ -225,14 +224,10 @@ public class FTPClient {
             }
             System.out.println("远程文件");
             String lonfile=filename;
-// 准备发送数据的流
-//            Socket dataSocket = dataConnectionPort("STOR " + lonfile);
             send("STOR " + remoteDir + "/" + lonfile);
             OutputStream outstr = dataSocket.getOutputStream();
             while ((n = sendfile.read(buff)) > 0) {
                 outstr.write(buff, 0, n);
-//               outputStream.write(buff,0,n);
-//               outputStream.flush();
             }
             outstr.flush();
             dataSocket.close();
@@ -243,4 +238,18 @@ public class FTPClient {
         }
     }
 
+    public void disConnect(){
+        try{
+            ctrlSocket.close();
+            dataSocket.close();
+            inputStream.close();
+            outputStream.close();
+            ctrlInput.close();
+            ctrlOutput.close();
+            send("QUIT");
+        }catch (IOException e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 }
