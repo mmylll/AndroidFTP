@@ -1,4 +1,4 @@
-package cn.maddie.androidtcpserver;
+package com.example.androidftpserver;
 import android.os.Handler;
 import android.os.Message;
 
@@ -24,12 +24,14 @@ public class FTPServer {
     ServerSocket serverSocket;
     InputStream inputStream;
     OutputStream outputStream;
+    InputStream dataInputStream;
+    OutputStream dataOutputStream;
     Message message;
     Handler handler;
 
     private Socket dataSocket;
     private Logger logger;//日志对象
-    private String dir = "/data/FTPServer";//绝对路径
+    private String dir = "/sdcard/FTPServer";//绝对路径
     private String pdir = "/data/FTPServer";//相对路径
     private final static Random generator = new Random();//随机数
     BufferedReader br;
@@ -43,23 +45,22 @@ public class FTPServer {
     int port_high = 0;
     int port_low = 0;
     String retr_ip = "";//接收文件的IP地址
+    private String remotePath = "/storage/emulated/0/Android/data/com.selfftpclient.androidftpclient/files/Client";
 
 
     public FTPServer(Handler handler) {
         this.handler = handler;
     }
 
+    public void setDir(String path){
+        this.dir = path;
+        this.pdir = path;
+    }
+
     public void connftp(int port) throws IOException {
         logger = Logger.getLogger("com");
         serverSocket = new ServerSocket(port);
         logger.info("准备连接");
-        File folder = new File("/data/FTPServer");
-        if(!folder.exists()&&!folder.isDirectory()){
-            folder.mkdir();
-            logger.info("文件夹已创建成功");
-        }else {
-            logger.info("文件夹已存在");
-        }
         while (true){
             ctrlSocket = serverSocket.accept();
             if (ctrlSocket != null){
@@ -86,6 +87,7 @@ public class FTPServer {
             byte[] byte2 = new byte[a];
             System.arraycopy(byte1, 0, byte2, 0, a);
             String command = new String(byte2, "UTF-8");
+//            String command = br.readLine();
             message = new Message();
             message.what = 1;//接收
             message.obj = command;
@@ -319,7 +321,8 @@ public class FTPServer {
                             OutputStream outsocket = null;
                             try {
 //创建从中读取和向其中写入（可选）的随机访问文件流，该文件具有指定名称
-                                outfile = new RandomAccessFile(dir+"/"+str,"r");
+                                outfile = new RandomAccessFile(str,"r");
+                                System.out.println(str+"///////////////");
                                 outsocket = dataSocket.getOutputStream();
                             } catch (FileNotFoundException e) {
                                 System.out.println(e.getMessage());
@@ -388,7 +391,7 @@ public class FTPServer {
                             RandomAccessFile infile = null;
                             InputStream insocket = null;
                             try {
-                                infile = new RandomAccessFile(dir+"/"+str,"rw");
+                                infile = new RandomAccessFile(str,"rw");
                                 insocket = dataSocket.getInputStream();
                             } catch (FileNotFoundException e) {
                                 System.out.println(e.getMessage());
@@ -567,8 +570,12 @@ public class FTPServer {
             public void run() {
                 try {
                     byte[] bytes = s.getBytes();
-                    outputStream.flush();
+//                    outputStream.flush();
                     outputStream.write(bytes);
+                    outputStream.flush();
+//                    pw.flush();
+//                    pw.write(s);
+//                    pw.flush();
                     message = new Message();
                     message.what = 2;//发送
                     message.obj = s;

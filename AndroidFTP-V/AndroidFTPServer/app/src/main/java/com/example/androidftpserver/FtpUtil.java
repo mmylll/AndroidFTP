@@ -1,13 +1,9 @@
-package cn.maddie.androidtcpserver;
+package com.example.androidftpserver;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat; import java.util.Date;
-/**
-*FTP工具类
-*@author Leon
-*
-*/
+
 public class FtpUtil {
     public static void getDetailList(PrintWriter pw, String path){
         File dir = new File(path);

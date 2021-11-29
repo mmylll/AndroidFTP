@@ -1,6 +1,8 @@
-package com.example.demo10_22tcp;
+package com.selfftpclient.androidftpclient;
 
 import android.app.Application;
+
+import com.selfftpclient.androidftpclient.FTPClient;
 
 public class MyDataApp extends Application {
 

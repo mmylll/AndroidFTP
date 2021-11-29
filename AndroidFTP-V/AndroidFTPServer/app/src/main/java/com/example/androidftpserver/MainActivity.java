@@ -1,10 +1,12 @@
+package com.example.androidftpserver;
 
-package cn.maddie.androidtcpserver;
-
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -18,13 +20,17 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button bt_conn, bt_send;
     private EditText et_port, et_msg;
     private TextView tv_data, tv_ip;
 
-    FTPServer FTPServer;
+    private String path;
+
+    com.example.androidftpserver.FTPServer FTPServer;
     Message message;
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {
@@ -89,7 +95,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void run() {
                         try {
+                            if (Build.VERSION.SDK_INT >= 23) {
+                                int REQUEST_CODE_CONTACT = 101;
+                                String[] permissions = {
+                                        Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                                //Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS
+                                //验证是否许可权限
+                                for (String str : permissions) {
+                                    if (MainActivity.this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
+                                        //申请权限
+                                        MainActivity.this.requestPermissions(permissions, REQUEST_CODE_CONTACT);
+                                        return;
+                                    } else {
+                                        //这里就是权限打开之后自己要操作的逻辑
+                                    }
+                                }
+                            }
+                            String path = getExternalFilesDir("Server").getPath();
+                            System.out.println(path + "----------------------------------");
+                            FTPServer.setDir(path);
                             FTPServer.connftp(Integer.parseInt(et_port.getText().toString()));
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
