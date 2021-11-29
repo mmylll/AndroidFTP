@@ -44,26 +44,6 @@ public class FTPClient {
         this.dir = dir;
     }
 
-    public void setRemoteDir(String remoteDir){
-        this.remoteDir = remoteDir;
-    }
-
-    public void setHandler(Handler handler) {
-        this.handler = handler;
-    }
-
-    public BufferedReader getCtrlInput() {
-        return ctrlInput;
-    }
-
-    public PrintWriter getCtrlOutput() {
-        return ctrlOutput;
-    }
-
-    public String getRemoteDir() {
-        return remoteDir;
-    }
-
     public void connftp(String ip, int port) throws IOException {
         this.ip = ip;
         ctrlSocket = new Socket(ip, port);
@@ -184,6 +164,9 @@ public class FTPClient {
     }
 
     public void doRETR(String filename) {
+        if(dataSocket.isClosed()){
+            dataConnectionPort();
+        }
         String fileName = filename;
         String loafile=filename;
         try {
@@ -210,6 +193,11 @@ public class FTPClient {
 //STOR命令
 // 向服务器发送文件
     public void doSTOR(String filename) {
+        if(dataSocket != null) {
+            if (dataSocket.isClosed()) {
+                dataConnectionPort();
+            }
+        }
         String fileName = filename;
         try {
             int n;
@@ -247,9 +235,13 @@ public class FTPClient {
             ctrlInput.close();
             ctrlOutput.close();
             send("QUIT");
-        }catch (IOException e){
+            message = new Message();
+            message.what = 4;//发送
+            message.obj = "已断开连接";
+            handler.sendMessage(message);
+        }catch (Exception e){
             e.printStackTrace();
-            System.exit(1);
+
         }
     }
 }

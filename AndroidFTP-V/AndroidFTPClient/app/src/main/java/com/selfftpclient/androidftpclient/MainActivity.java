@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(MainActivity.this, "FTP连接成功！", Toast.LENGTH_SHORT).show();
                     bt_send.setEnabled(true);
                     break;
+                case 4:
+                    Toast.makeText(MainActivity.this,"FTP连接已断开",Toast.LENGTH_SHORT).show();
+                    break;
             }
         }
     };
@@ -184,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         FTPClient.disConnect();
                     }
                 }).start();
+                bt_send.setEnabled(false);
                 break;
         }
     }
